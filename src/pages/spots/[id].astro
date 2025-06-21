@@ -1,0 +1,122 @@
+---
+// このファイルは、スポットの詳細ページを表示するためのものです。
+import Layout from '../../layouts/Layout.astro';
+import { createClient } from 'microcms-js-sdk';
+import type { GetStaticPaths } from 'astro';
+
+// ↓↓↓ このtype Spotの定義に丸ごと置き換えてください ↓↓↓
+type Spot = {
+  id: string;
+  spotName: string;
+  description: string;
+  image?: {
+    url: string;
+    height: number;
+    width: number;
+  };
+  category: string[]; // categoryの定義を追加
+  region: string[];   // regionの定義を追加
+  address?: string;
+  affiliateLink?: string; // affiliateLinkの定義も追加
+};
+
+// --- 1. getStaticPaths: Astroにどのページを生成すべきか教える特別な関数 ---
+export const getStaticPaths: GetStaticPaths = async () => {
+  const client = createClient({
+    serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
+    apiKey: import.meta.env.MICROCMS_API_KEY,
+  });
+
+  // まず、全てのスポットのIDを取得する
+  const response = await client.get({ endpoint: "spots",});
+
+  // 各スポットのIDを使って、Astroにページのパスを教える
+  return response.contents.map((spot: { id: string }) => ({
+    params: { id: spot.id },
+  }));
+};
+
+// --- 2. ページのpropsから、表示すべきスポットのIDを受け取る ---
+const { id } = Astro.params;
+
+// --- 3. そのIDを使って、1件だけの詳細データをmicroCMSから取得する ---
+const client = createClient({
+  serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
+  apiKey: import.meta.env.MICROCMS_API_KEY,
+});
+const spot: Spot = await client.get({
+  endpoint: "spots",
+  contentId: String(id), // String()で囲んで、idを文字列に変換
+});
+---
+
+<Layout title={spot.spotName}>
+
+  {/* ↓↓↓ 詳細ページ全体のコンテナ ↓↓↓ */}
+  <div class="bg-stone-100 dark:bg-zinc-800 rounded-2xl shadow-xl p-6 md:p-10 my-8">
+    <a href="/" class="inline-flex items-center justify-center px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors mb-4 font-semibold shadow" title="スポット一覧に戻る">
+    ＜  スポット一覧に戻る
+    </a>
+    
+    {/* --- ヘッダーセクション --- */}
+<div class="text-center mb-10">
+  {/* ↓↓↓ カテゴリをリンクにする ↓↓↓ */}
+  <a href={`/category/${spot.category[0]}/`}>
+    <span class="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200 text-sm font-semibold px-4 py-1 rounded-full hover:bg-blue-200 transition-colors">
+      {spot.category[0]}
+    </span>
+  </a>
+  <span class="inline-block w-2"></span>
+  {/* ↓↓↓ 地域をリンクにする ↓↓↓ */}
+  <a href={`/region/${spot.region[0]}/`}>
+    <span class="inline-block bg-green-100 text-green-800 dark:bg-green-900/70 dark:text-green-200 text-sm font-semibold px-4 py-1 rounded-full hover:bg-green-200 transition-colors">
+      {spot.region[0]}
+    </span>
+  </a>
+  {/* スポット名 */}
+  <h1 class="text-3xl md:text-5xl font-bold text-gray-900 dark:text-zinc-100 mt-4">{spot.spotName}</h1>
+  
+  
+  <div class="mt-4 text-gray-500 dark:text-gray-400 font-medium">
+    {/* ↓↓↓ 地域をリンクにする ↓↓↓ */}
+    
+  </div>
+</div>
+
+    {/* --- 2カラムのコンテンツセクション --- */}
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12">
+      
+      {/* --- 左カラム (画像) --- */}
+      <div class="md:col-span-3">
+        {spot.image ? (
+          <img src={spot.image.url} alt={spot.spotName} class="w-full h-auto object-cover rounded-lg shadow-md" />
+        ) : (
+          <div class="w-full h-80 bg-gray-200 rounded-lg flex items-center justify-center">
+            <p class="text-gray-500">画像なし</p>
+          </div>
+        )}
+      </div>
+
+      {/* --- 右カラム (詳細情報) --- */}
+      <div class="md:col-span-2">
+     
+        
+        {/* proseクラスがリッチエディタの文章を綺麗に見せる */}
+        <div class="prose prose-lg max-w-none text-gray-800 dark:prose-invert dark:text-zinc-200" set:html={spot.description} />
+        
+        <hr class="my-6" />
+        
+        <p class="text-base text-gray-800 dark:text-zinc-200"><strong>住所:</strong> {spot.address || '情報なし'}</p>
+        
+        {spot.affiliateLink && (
+          <div class="text-center mt-8">
+            <a href={spot.affiliateLink} target="_blank" rel="noopener noreferrer" class="inline-block w-full bg-orange-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-orange-600 transition-transform transform hover:-translate-y-1 shadow-lg">
+              Klookで予約・詳細を見る
+            </a>
+          </div>
+        )}
+      </div>
+
+    </div>
+  </div>
+</Layout>

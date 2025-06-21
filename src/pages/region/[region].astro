@@ -1,0 +1,111 @@
+---
+// このファイルは、地域ごとのスポット一覧ページを生成するためのものです。
+import Layout from '../../layouts/Layout.astro';
+import { createClient } from 'microcms-js-sdk';
+import type { GetStaticPaths } from 'astro';
+
+// Spotの型定義
+type Spot = {
+  id: string;
+  spotName: string;
+  description: string;
+  image?: { url: string; height: number; width: number; };
+  category: string[];
+  region: string[];
+};
+
+// getStaticPaths: 地域ごとのページを生成する
+export const getStaticPaths: GetStaticPaths = async () => {
+  const client = createClient({
+    serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
+    apiKey: import.meta.env.MICROCMS_API_KEY,
+  });
+
+  const response = await client.get<{ contents: Spot[] }>({ endpoint: "spots", queries: { limit: 100 } });
+  
+  const allRegions = response.contents.flatMap((spot) => spot.region);
+  const uniqueRegions = [...new Set(allRegions)];
+
+  return uniqueRegions.map((region) => ({
+    params: { region: region },
+  }));
+};
+
+const { region } = Astro.params;
+
+const client = createClient({
+  serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
+  apiKey: import.meta.env.MICROCMS_API_KEY,
+});
+
+// microCMSのフィルタ機能を使い、指定した地域を含むスポットだけを取得
+const response = await client.get({
+  endpoint: "spots",
+  queries: { filters: `region[contains]${region}` }
+});
+const spots: Spot[] = response.contents;
+---
+
+<Layout title={`地域: ${region} | β-Explorer`}>
+  <div class="mt-4">
+  <a href="/" class="inline-flex items-center justify-center px-6 py-2 
+  rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors 
+  mb-4 font-semibold shadow" title="スポット一覧に戻る">
+    ＜  スポット一覧に戻る
+    </a>
+  <h1 class="text-4xl font-bold dark:text-zinc-200 mt-4">絞り込み: {region}</h1>
+
+  {/* スポット一覧はindex.astroとほぼ同じ */}
+  <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {spots.map((spot) => (
+      <li
+    class="bg-white dark:bg-zinc-800 rounded-xl shadow-md overflow-hidden flex flex-col"
+    data-spot-name={spot.spotName}
+    data-description={spot.description}
+    data-region={spot.region[0]}
+    data-category={spot.category.join(',')}
+  >
+    {/* --- 画像部分は変更なし --- */}
+    <div class="relative">
+      <a href={`/spots/${spot.id}/`}>
+        {spot.image ? (
+          <img src={spot.image.url} alt={spot.spotName} class="w-full h-48 object-cover" />
+        ) : (
+          <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+            <p class="text-gray-500">画像なし</p>
+          </div>
+        )}
+      </a>
+    </div>
+
+    {/* --- テキスト部分の構造を修正 --- */}
+    <div class="p-6 flex-grow flex flex-col relative group">
+      <div class="flex items-baseline flex-wrap gap-2 mb-2">
+        {/* カテゴリと地域のリンクには、重なり順を手前にするz-10を追加 */}
+        <a href={`/category/${spot.category[0]}/`} class="relative z-10">
+          <span class="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200 text-xs font-semibold px-2.5 py-1 rounded-full hover:bg-blue-200 transition-colors">
+            {spot.category[0]}
+          </span>
+        </a>
+        <a href={`/region/${spot.region[0]}/`} class="relative z-10">
+          <span class="inline-block bg-green-100 text-green-800 dark:bg-green-900/70 dark:text-green-200 text-xs font-semibold px-2.5 py-1 rounded-full hover:bg-green-200 transition-colors">
+            {spot.region[0]}
+          </span>
+        </a>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-zinc-100 leading-tight">
+        {/* スポット名自体はもうリンクにしなくてOK */}
+        {spot.spotName}
+      </h2>
+
+      {/* 説明文 */}
+      <div class="prose prose-sm mt-2 text-gray-600 dark:text-zinc-400 line-clamp-3" set:html={spot.description} />
+
+      {/* これが「透明なリンクの膜」。カード全体に広がり、詳細ページに飛ばす */}
+      <a href={`/spots/${spot.id}/`} class="absolute inset-0 z-0" aria-label={spot.spotName}></a>
+    </div>
+  </li>
+    ))}
+  </ul>
+</Layout>

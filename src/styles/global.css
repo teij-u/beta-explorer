@@ -1,0 +1,14 @@
+/* Google Fontsの読み込みは、必ずファイルの先頭に書きます */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+/* サイト全体の背景や基本フォントの設定 */
+
+/* 我々が追加したカスタムクラス */
+.text-shadow-lg {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background-color: #ffffff; /* Tailwindのslate-100に近い色 */
+  color: #334155; /* 文字色も濃いグレーに調整 */
+}

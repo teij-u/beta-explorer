@@ -1,0 +1,213 @@
+---
+//このファイルは、サイトのトップページを定義しています。
+import Layout from '../layouts/Layout.astro';
+import { createClient } from 'microcms-js-sdk';
+
+type Spot = {
+  id: string;
+  spotName: string;
+  description: string;
+  image?: { url: string; height: number; width: number; };
+  category: string[];
+  region: string[];
+};
+
+const client = createClient({
+  serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
+  apiKey: import.meta.env.MICROCMS_API_KEY,
+});
+
+const response = await client.get<{ contents: Spot[] }>({ 
+  endpoint: "spots", 
+  queries: { limit: 100 }
+});
+const spots: Spot[] = response.contents;
+
+const allCategories = spots.flatMap((spot) => spot.category);
+const uniqueCategories = [...new Set(allCategories)];
+
+const allRegions = spots.flatMap((spot) => spot.region);
+const uniqueRegions = [...new Set(allRegions)];
+---
+
+<Layout title="Route Explorer - トップページ">
+  {/* ↓↓↓ ここからが新しいヒーローセクション ↓↓↓ */}
+  <div
+    class="relative h-80 md:h-96 overflow-hidden bg-cover bg-center flex items-center justify-center text-center p-4 mb-[-4rem] shadow-lg"
+    style={`background-image: url('/images/hero-image.jpg');`}
+  >
+    {/* 背景を少し暗くして文字を読みやすくするためのオーバーレイ */}
+    <div class="absolute inset-0 bg-black/20"></div>
+    {/* 背景を少しぼかして文字を読みやすくするためのオーバーレイ */}
+    <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent"></div>
+    {/* テキストコンテンツ */}
+    <div class="relative z-10">
+      <header class="text-center my-12"> 
+        <h1 class="text-5xl md:text-7xl font-bold text-shadow-lg text-white">β-Explorer</h1> 
+        <p class="text-lg md:text-2xl font-bold opacity-90 mt-4 text-white">
+          最強穴場スポットを <span class="font-semibold text-3xl">発見</span> しよう！
+        </p>
+      </header>
+    </div>
+  </div>
+  {/* ↑↑↑ ここまでがヒーローセクション ↑↑↑ */}
+
+  {/* 検索パネル */}
+  <div class="search-panel bg-gray-100 dark:bg-zinc-800 backdrop-blur-sm rounded-2xl p-8 shadow-2xl max-w-4xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+      {/* キーワード検索 */}
+      <div class="search-group">
+        <label for="keyword" class="block mb-2 font-semibold text-gray-700 dark:text-zinc-200">キーワード検索</label>
+        <input
+          type="text"
+          id="keyword"
+          class="w-full p-3 border-2 border-gray-200 rounded-lg bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+          placeholder="桜、温泉、城下町など"
+        />
+      </div>
+      {/* 地域セレクト */}
+      <div class="search-group">
+        <label for="region" class="block mb-2 font-semibold text-gray-700 dark:text-zinc-200">地域</label>
+        <select
+          id="region"
+          class="w-full p-3 border-2 border-gray-200 rounded-lg bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+        >
+          <option value="">すべての地域</option>
+          {uniqueRegions.map(region => (
+            <option value={region}>{region}</option>
+          ))}
+        </select>
+      </div>
+      {/* カテゴリーセレクト */}
+      <div class="search-group">
+        <label for="category" class="block mb-2 font-semibold text-gray-700 dark:text-zinc-200">カテゴリー</label>
+        <select
+          id="category"
+          class="w-full p-3 border-2 border-gray-200 rounded-lg bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+        >
+          <option value="">すべてのカテゴリー</option>
+          {uniqueCategories.map(category => (
+            <option value={category}>{category}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <ul id="spotList" class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {spots.map((spot) => (
+      <li
+    class="bg-white dark:bg-zinc-800 rounded-xl shadow-md overflow-hidden flex flex-col"
+    data-spot-name={spot.spotName}
+    data-description={spot.description}
+    data-region={spot.region[0]}
+    data-category={spot.category.join(',')}
+  >
+    {/* --- 画像部分は変更なし --- */}
+    <div class="relative">
+      <a href={`/spots/${spot.id}/`}>
+        {spot.image ? (
+          <img src={spot.image.url} alt={spot.spotName} class="w-full h-48 object-cover" />
+        ) : (
+          <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+            <p class="text-gray-500">画像なし</p>
+          </div>
+        )}
+      </a>
+    </div>
+
+    {/* --- テキスト部分の構造を修正 --- */}
+    <div class="p-6 flex-grow flex flex-col relative group">
+      <div class="flex items-baseline flex-wrap gap-2 mb-2">
+        {/* カテゴリと地域のリンクには、重なり順を手前にするz-10を追加 */}
+        <a href={`/category/${spot.category[0]}/`} class="relative z-10">
+          <span class="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200 text-xs font-semibold px-2.5 py-1 rounded-full hover:bg-blue-200 transition-colors">
+            {spot.category[0]}
+          </span>
+        </a>
+        <a href={`/region/${spot.region[0]}/`} class="relative z-10">
+          <span class="inline-block bg-green-100 text-green-800 dark:bg-green-900/70 dark:text-green-200 text-xs font-semibold px-2.5 py-1 rounded-full hover:bg-green-200 transition-colors">
+            {spot.region[0]}
+          </span>
+        </a>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-zinc-100 leading-tight">
+        {/* スポット名自体はもうリンクにしなくてOK */}
+        {spot.spotName}
+      </h2>
+
+      {/* 説明文 */}
+      <div class="prose prose-sm mt-2 text-gray-600 dark:text-zinc-400 line-clamp-3" set:html={spot.description} />
+
+      {/* これが「透明なリンクの膜」。カード全体に広がり、詳細ページに飛ばす */}
+      <a href={`/spots/${spot.id}/`} class="absolute inset-0 z-0" aria-label={spot.spotName}></a>
+    </div>
+  </li>
+      <a 
+        href="/" 
+        id="backToTopBtn"
+        class="fixed bottom-8 right-8 md:right-12 z-50 inline-flex items-center justify-center px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors font-semibold shadow"
+        style="box-shadow: 0 4px 24px rgba(0,0,0,0.15); display: none;" 
+        title="スポット一覧に戻る"
+      >
+        ^ トップに戻る
+      </a>
+      <script is:inline>
+        window.addEventListener('scroll', () => {
+          const btn = document.getElementById('backToTopBtn');
+          if (!btn) return;
+          if (window.scrollY > 100) {
+        btn.style.display = '';
+          } else {
+        btn.style.display = 'none';
+          }
+        });
+      </script>
+    ))}
+    
+  </ul>
+
+  <script is:inline>
+    const keywordInput = document.getElementById('keyword');
+    const regionSelect = document.getElementById('region');
+    const categorySelect = document.getElementById('category');
+    const spotList = document.getElementById('spotList');
+
+    if (keywordInput && regionSelect && categorySelect && spotList) {
+      const spots = spotList.querySelectorAll('li');
+
+      const filterSpots = () => {
+        const keywordTerm = keywordInput.value.toLowerCase();
+        const regionTerm = regionSelect.value;
+        const categoryTerm = categorySelect.value;
+
+        spots.forEach(spot => {
+          const spotData = spot.dataset;
+          const spotName = spotData.spotName || '';
+          const description = spotData.description || '';
+          const region = spotData.region || '';
+          const category = spotData.category || '';
+
+          const searchText = `${spotName} ${description} ${region} ${category}`.toLowerCase();
+
+          const keywordMatch = !keywordTerm || searchText.includes(keywordTerm);
+          const regionMatch = !regionTerm || region === regionTerm;
+          const categoryMatch = !categoryTerm || category.split(',').includes(categoryTerm);
+
+          if (keywordMatch && regionMatch && categoryMatch) {
+            spot.style.display = '';
+          } else {
+            spot.style.display = 'none';
+          }
+        });
+      };
+
+      keywordInput.addEventListener('input', filterSpots);
+      regionSelect.addEventListener('change', filterSpots);
+      categorySelect.addEventListener('change', filterSpots);
+    }
+  </script>
+  
+</Layout>
+
