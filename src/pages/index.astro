@@ -138,7 +138,7 @@ const uniqueRegions = [...new Set(allRegions)];
       </h2>
 
       {/* 説明文 */}
-      <div class="prose prose-sm mt-2 text-gray-600 dark:text-zinc-400 prose-invert line-clamp-3" set:html={spot.description} />
+      <div class="prose prose-sm mt-2 text-gray-600 dark:text-zinc-400 dark:prose-invert line-clamp-3" set:html={spot.description} />
 
       {/* これが「透明なリンクの膜」。カード全体に広がり、詳細ページに飛ばす */}
       <a href={`/spots/${spot.id}/`} class="absolute inset-0 z-0" aria-label={spot.spotName}></a>
