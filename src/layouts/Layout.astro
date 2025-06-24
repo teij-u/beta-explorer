@@ -9,6 +9,23 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width">
     <title>{title}</title>
     <link rel="stylesheet" href="/styles/global.css">
+    {/* ... </title>や<link>タグの後、</head>の直前 ... */}
+
+{/* --- ↓↓↓ Google Analytics用のコードを追加 ↓↓↓ --- */}
+{import.meta.env.GOOGLE_ANALYTICS_ID && (
+  <>
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${import.meta.env.GOOGLE_ANALYTICS_ID}`}></script>
+    <script define:vars={{ ga_id: import.meta.env.GOOGLE_ANALYTICS_ID }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', ga_id);
+    </script>
+  </>
+)}
+{/* --- ↑↑↑ ここまで ↑↑↑ --- */}
+
+</head>
   </head>
   <body class="bg-white dark:bg-zinc-900 transition-colors duration-300">
     <header class="sticky top-0 z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md shadow-sm">
