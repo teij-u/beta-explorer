@@ -53,10 +53,10 @@ const uniqueRegions = [...new Set(allRegions)];
   {/* ↑↑↑ ここまでがヒーローセクション ↑↑↑ */}
 
   {/* 検索パネル */}
-  <div class="search-panel bg-gray-100 dark:bg-zinc-800 backdrop-blur-sm rounded-2xl p-8 shadow-2xl max-w-4xl mx-auto">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+  <div class="search-panel bg-gray-100 dark:bg-zinc-800 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-2xl max-w-4xl mx-auto">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
       {/* キーワード検索 */}
-      <div class="search-group">
+      <div class="search-group col-span-2 md:col-span-1">
         <label for="keyword" class="block mb-2 font-semibold text-gray-700 dark:text-zinc-200">キーワード検索</label>
         <input
           type="text"
@@ -91,6 +91,16 @@ const uniqueRegions = [...new Set(allRegions)];
           ))}
         </select>
       </div>
+    </div>
+
+    {/* --- 検索ボタンとクリアボタン --- */}
+    <div class="flex justify-center gap-4 mt-6">
+      <button id="search-btn" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+        検索
+      </button>
+      <button id="clear-btn" class="px-8 py-3 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-colors">
+        クリア
+      </button>
     </div>
   </div>
 
@@ -173,8 +183,10 @@ const uniqueRegions = [...new Set(allRegions)];
     const regionSelect = document.getElementById('region');
     const categorySelect = document.getElementById('category');
     const spotList = document.getElementById('spotList');
+    const searchBtn = document.getElementById('search-btn');
+    const clearBtn = document.getElementById('clear-btn');
 
-    if (keywordInput && regionSelect && categorySelect && spotList) {
+    if (keywordInput && regionSelect && categorySelect && spotList && searchBtn && clearBtn) {
       const spots = spotList.querySelectorAll('li');
 
       const filterSpots = () => {
@@ -203,9 +215,17 @@ const uniqueRegions = [...new Set(allRegions)];
         });
       };
 
-      keywordInput.addEventListener('input', filterSpots);
-      regionSelect.addEventListener('change', filterSpots);
-      categorySelect.addEventListener('change', filterSpots);
+      const clearFilter = () => {
+        keywordInput.value = '';
+        regionSelect.value = '';
+        categorySelect.value = '';
+        spots.forEach(spot => {
+          spot.style.display = '';
+        });
+      };
+
+      searchBtn.addEventListener('click', filterSpots);
+      clearBtn.addEventListener('click', clearFilter);
     }
   </script>
   
