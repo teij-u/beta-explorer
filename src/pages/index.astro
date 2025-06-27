@@ -33,7 +33,7 @@ const uniqueRegions = [...new Set(allRegions)];
 <Layout title="Route Explorer - トップページ">
   {/* ↓↓↓ ここからが新しいヒーローセクション ↓↓↓ */}
   <div
-    class="relative h-80 md:h-96 overflow-hidden bg-cover bg-center flex items-center justify-center text-center p-4 mb-[-4rem] shadow-lg"
+    class="relative h-80 md:h-70 overflow-hidden bg-cover bg-center flex items-center justify-center text-center p-4 mb-[-4rem] shadow-lg hidden sm:flex"
     style={`background-image: url('/images/hero-image.jpg');`}
   >
     {/* 背景を少し暗くして文字を読みやすくするためのオーバーレイ */}
@@ -41,12 +41,12 @@ const uniqueRegions = [...new Set(allRegions)];
     {/* 背景を少しぼかして文字を読みやすくするためのオーバーレイ */}
     <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent"></div>
     {/* テキストコンテンツ */}
-    <div class="relative z-10">
-      <header class="text-center my-12"> 
-        <h1 class="text-5xl md:text-7xl font-bold text-shadow-lg text-white">β-Explorer</h1> 
-        <p class="text-lg md:text-2xl font-bold opacity-90 mt-4 text-white">
-          最強穴場スポットを <span class="font-semibold text-3xl">発見</span> しよう！
-        </p>
+    <div class="relative z-10 flex flex-col justify-start h-full pt-8">
+      <header class="text-center mt-4 mb-8"> 
+      <h1 class="text-5xl md:text-7xl font-bold text-shadow-lg text-white">β-Explorer</h1> 
+      <p class="text-lg md:text-2xl font-bold opacity-90 mt-4 text-white">
+        最強穴場スポットを <span class="font-semibold text-3xl">発見</span> しよう！
+      </p>
       </header>
     </div>
   </div>
@@ -95,12 +95,27 @@ const uniqueRegions = [...new Set(allRegions)];
 
     {/* --- 検索ボタンとクリアボタン --- */}
     <div class="flex justify-center gap-4 mt-6">
-      <button id="search-btn" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+      <a 
+      href="https://docs.google.com/forms/d/e/1FAIpQLScP7KM5gIVpuKUfUOaPbhHSHUobYIivDZRJ1RU8Zg1PTcl_7g/viewform?usp=dialog" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      class="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 via-blue-600 to-sky-700 text-white font-semibold rounded-full shadow-lg hover:from-blue-700 hover:to-sky-600 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      新規スポット
+      </a>
+      <button id="search-btn" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
         検索
       </button>
       <button id="clear-btn" class="px-8 py-3 bg-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-400 transition-colors">
         クリア
       </button>
+      
+    </div>
+    <div class="flex justify-end mt-4">
+      
     </div>
   </div>
 

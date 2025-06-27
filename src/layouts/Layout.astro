@@ -1,5 +1,4 @@
 ---
-//このファイルは、サイト全体のレイアウトを定義します。
 import ThemeToggleButton from '../components/ThemeToggleButton.astro';
 const { title } = Astro.props;
 ---
@@ -9,65 +8,69 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width">
     <title>{title}</title>
     <link rel="stylesheet" href="/styles/global.css">
-    {/* ... </title>や<link>タグの後、</head>の直前 ... */}
 
-{/* --- ↓↓↓ Google Analytics用のコードを追加 ↓↓↓ --- */}
-{import.meta.env.GOOGLE_ANALYTICS_ID && (
-  <>
-    <script async src={`https://www.googletagmanager.com/gtag/js?id=${import.meta.env.GOOGLE_ANALYTICS_ID}`}></script>
-    <script define:vars={{ ga_id: import.meta.env.GOOGLE_ANALYTICS_ID }}>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', ga_id);
-    </script>
-  </>
-)}
-{/* --- ↑↑↑ ここまで ↑↑↑ --- */}
-
-</head>
+    {import.meta.env.GOOGLE_ANALYTICS_ID && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${import.meta.env.GOOGLE_ANALYTICS_ID}`}></script>
+        <script define:vars={{ ga_id: import.meta.env.GOOGLE_ANALYTICS_ID }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', ga_id);
+        </script>
+      </>
+    )}
   </head>
   <body class="bg-white dark:bg-zinc-900 transition-colors duration-300">
     <header class="sticky top-0 z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          {/* ヘッダー左側 */}
-          <div class="flex-shrink-0">
-            {/* ★★★ 文字色にダークモード用のクラスを追加 ★★★ */}
+            {/* ヘッダー左側 */}
+            <div class="flex-shrink-0 flex items-center">
             <a href="/" class="text-2xl font-bold text-gray-900 dark:text-white hover:text-blue-700 dark:hover:text-blue-400 transition-colors">
               β-Explorer
-            </a>
-          </div>
-          {/* --- ヘッダー右側（PC用）--- */}
-          <div class="hidden md:flex items-center space-x-6">
+            </div>
+            {/* ヘッダー右側（PC用） */}
+            <div class="hidden md:flex items-center space-x-6">
             <nav class="flex space-x-6">
               <a href="/about/" class="text-gray-700 dark:text-zinc-300 hover:text-blue-700 dark:hover:text-blue-400 transition-colors">このサイトについて</a>
               <a href="/contact/" class="text-gray-700 dark:text-zinc-300 hover:text-blue-700 dark:hover:text-blue-400 transition-colors">お問い合わせ</a>
-              <a href="/submit/" class="text-gray-700 dark:text-zinc-300 hover:text-blue-700 dark:hover:text-blue-400 transition-colors">＋ スポットを投稿</a>
             </nav>
+            <a 
+              href="https://docs.google.com/forms/d/e/1FAIpQLScP7KM5gIVpuKUfUOaPbhHSHUobYIivDZRJ1RU8Zg1PTcl_7g/viewform?usp=dialog" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="ml-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              ＋ スポットを投稿
+            </a>
             <ThemeToggleButton />
-          </div>
-
-          {/* --- ハンバーガーメニューボタン（SP用） --- */}
+            </div>
+            {/* ハンバーガーメニューボタン（SP用） */}
           <div class="md:hidden flex items-center">
-            <ThemeToggleButton />
+            
             <button id="menu-btn" class="ml-4 p-2 text-gray-700 dark:text-zinc-300 hover:text-blue-700 dark:hover:text-blue-400" aria-label="メニューを開く">
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
           </div>
+          
         </div>
-      </div>
-
-      {/* --- SP用ナビゲーションメニュー --- */}
-      <div id="mobile-menu" class="md:hidden hidden bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm">
-        <nav class="px-2 pt-2 pb-4 space-y-1">
-          <a href="/about/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800">このサイトについて</a>
-          <a href="/contact/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800">お問い合わせ</a>
-          <a href="/submit/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800">スポットを投稿</a>
-        </nav>
-      </div>
+        {/* SP用ナビゲーションメニュー */}
+        <div id="mobile-menu" class="md:hidden hidden bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm">
+          <nav class="px-2 pt-2 pb-4 space-y-1">
+            <a href="/about/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800">このサイトについて</a>
+            <a href="/contact/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800">お問い合わせ</a>
+            <a 
+              href="https://docs.google.com/forms/d/e/1FAIpQLScP7KM5gIVpuKUfUOaPbhHSHUobYIivDZRJ1RU8Zg1PTcl_7g/viewform?usp=dialog" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="block w-full text-center mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              ＋ スポットを投稿
+            </a>
+          </nav>
         </div>
       </div>
     </header>
@@ -75,16 +78,13 @@ const { title } = Astro.props;
       <main>
         <slot />
       </main>
-      
       <footer class="text-center py-8 mt-12 text-gray-500 dark:text-zinc-400">
         <p>&copy; 2025 β-Explorer</p>
       </footer>
     </div>
-
     <script>
       const menuBtn = document.getElementById('menu-btn');
       const mobileMenu = document.getElementById('mobile-menu');
-
       menuBtn?.addEventListener('click', () => {
         mobileMenu?.classList.toggle('hidden');
       });
