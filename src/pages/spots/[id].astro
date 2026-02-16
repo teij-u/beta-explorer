@@ -50,7 +50,16 @@ const spot: Spot = await client.get({
 });
 ---
 
-<Layout title={spot.spotName}>
+<Layout title={spot.spotName} description={spot.description.replace(/<[^>]*>/g, '').substring(0, 160)} image={spot.image?.url}>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    "name": spot.spotName,
+    "description": spot.description.replace(/<[^>]*>/g, '').substring(0, 200),
+    "address": spot.address || undefined,
+    "image": spot.image?.url || undefined
+  })} />
 
   {/* ↓↓↓ 詳細ページ全体のコンテナ ↓↓↓ */}
   <div class="bg-stone-100 dark:bg-zinc-800 rounded-2xl shadow-xl p-6 md:p-10 my-8">

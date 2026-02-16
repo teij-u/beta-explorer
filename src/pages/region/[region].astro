@@ -46,7 +46,7 @@ const response = await client.get({
 const spots: Spot[] = response.contents;
 ---
 
-<Layout title={`地域: ${region} | β-Explorer`}>
+<Layout title={`地域: ${region} | β-Explorer`} description={`${region}エリアの穴場スポット一覧。β-Explorerで${region}のまだ知られていないNTAAスポットを探そう。`}>
   <div class="mt-4">
   <a href="/" class="inline-flex items-center justify-center px-6 py-2 
   rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors 
