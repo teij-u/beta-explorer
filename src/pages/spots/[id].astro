@@ -1,10 +1,8 @@
 ---
-// このファイルは、スポットの詳細ページを表示するためのものです。
 import Layout from '../../layouts/Layout.astro';
 import { createClient } from 'microcms-js-sdk';
-import type { GetStaticPaths } from 'astro';
+import { getCategoryClasses } from '../../utils/tagColors';
 
-// ↓↓↓ このtype Spotの定義に丸ごと置き換えてください ↓↓↓
 type Spot = {
   id: string;
   spotName: string;
@@ -14,39 +12,21 @@ type Spot = {
     height: number;
     width: number;
   };
-  category: string[]; // categoryの定義を追加
-  region: string[];   // regionの定義を追加
+  category: string[];
+  region: string[];
   address?: string;
-  affiliateLink?: string; // affiliateLinkの定義も追加
+  affiliateLink?: string;
 };
 
-// --- 1. getStaticPaths: Astroにどのページを生成すべきか教える特別な関数 ---
-export const getStaticPaths: GetStaticPaths = async () => {
-  const client = createClient({
-    serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
-    apiKey: import.meta.env.MICROCMS_API_KEY,
-  });
-
-  // まず、全てのスポットのIDを取得する
-  const response = await client.get({ endpoint: "spots",});
-
-  // 各スポットのIDを使って、Astroにページのパスを教える
-  return response.contents.map((spot: { id: string }) => ({
-    params: { id: spot.id },
-  }));
-};
-
-// --- 2. ページのpropsから、表示すべきスポットのIDを受け取る ---
 const { id } = Astro.params;
 
-// --- 3. そのIDを使って、1件だけの詳細データをmicroCMSから取得する ---
 const client = createClient({
   serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
   apiKey: import.meta.env.MICROCMS_API_KEY,
 });
 const spot: Spot = await client.get({
   endpoint: "spots",
-  contentId: String(id), // String()で囲んで、idを文字列に変換
+  contentId: String(id),
 });
 ---
 
@@ -61,71 +41,77 @@ const spot: Spot = await client.get({
     "image": spot.image?.url || undefined
   })} />
 
-  {/* ↓↓↓ 詳細ページ全体のコンテナ ↓↓↓ */}
-  <div class="bg-stone-100 dark:bg-zinc-800 rounded-2xl shadow-xl p-6 md:p-10 my-8">
-    <a href="/" class="inline-flex items-center justify-center px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors mb-4 font-semibold shadow" title="スポット一覧に戻る">
-    ＜  スポット一覧に戻る
+  <div class="py-8">
+
+    {/* 戻るリンク */}
+    <a href="/" class="back-link mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+      </svg>
+      スポット一覧に戻る
     </a>
-    
-    {/* --- ヘッダーセクション --- */}
-<div class="text-center mb-10">
-  {/* ↓↓↓ カテゴリをリンクにする ↓↓↓ */}
-  <a href={`/category/${spot.category[0]}/`}>
-    <span class="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200 text-sm font-semibold px-4 py-1 rounded-full hover:bg-blue-200 transition-colors">
-      {spot.category[0]}
-    </span>
-  </a>
-  <span class="inline-block w-2"></span>
-  {/* ↓↓↓ 地域をリンクにする ↓↓↓ */}
-  <a href={`/region/${spot.region[0]}/`}>
-    <span class="inline-block bg-green-100 text-green-800 dark:bg-green-900/70 dark:text-green-200 text-sm font-semibold px-4 py-1 rounded-full hover:bg-green-200 transition-colors">
-      {spot.region[0]}
-    </span>
-  </a>
-  {/* スポット名 */}
-  <h1 class="text-3xl md:text-5xl font-bold text-gray-900 dark:text-zinc-100 mt-4">{spot.spotName}</h1>
-  
-  
-  <div class="mt-4 text-gray-500 dark:text-gray-400 font-medium">
-    {/* ↓↓↓ 地域をリンクにする ↓↓↓ */}
-    
-  </div>
-</div>
 
-    {/* --- 2カラムのコンテンツセクション --- */}
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12">
-      
-      {/* --- 左カラム (画像) --- */}
-      <div class="md:col-span-3">
-        {spot.image ? (
-          <img src={spot.image.url} alt={spot.spotName} class="w-full h-auto object-cover rounded-lg shadow-md" />
-        ) : (
-          <div class="w-full h-80 bg-gray-200 rounded-lg flex items-center justify-center">
-            <p class="text-gray-500">画像なし</p>
+    {/* メインカード */}
+    <div class="bg-white dark:bg-zinc-800 rounded-xl border border-gray-100 dark:border-zinc-700 overflow-hidden mt-4">
+
+      {/* 画像（フルワイド） */}
+      {spot.image ? (
+        <img src={spot.image.url} alt={spot.spotName} class="w-full h-64 md:h-96 object-cover" />
+      ) : (
+        <div class="w-full h-64 md:h-96 bg-gray-100 dark:bg-zinc-700 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V5.25a1.5 1.5 0 00-1.5-1.5H3.75a1.5 1.5 0 00-1.5 1.5v14.25a1.5 1.5 0 001.5 1.5z" />
+          </svg>
+        </div>
+      )}
+
+      {/* コンテンツ */}
+      <div class="p-6 md:p-10">
+
+        {/* バッジ */}
+        <div class="flex items-center gap-2 mb-4">
+          <a href={`/category/${spot.category[0]}/`}>
+            <span class={`badge-category ${getCategoryClasses(spot.category[0])}`}>{spot.category[0]}</span>
+          </a>
+          <a href={`/region/${spot.region[0]}/`}>
+            <span class="badge-region">{spot.region[0]}</span>
+          </a>
+        </div>
+
+        {/* タイトル */}
+        <h1 class="text-2xl md:text-4xl font-bold text-gray-900 dark:text-zinc-100 tracking-tight">{spot.spotName}</h1>
+
+        {/* 2カラム */}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+
+          {/* 左: 説明文 */}
+          <div class="md:col-span-2">
+            <div class="prose prose-gray max-w-none dark:prose-invert text-gray-700 dark:text-zinc-300" set:html={spot.description} />
           </div>
-        )}
-      </div>
 
-      {/* --- 右カラム (詳細情報) --- */}
-      <div class="md:col-span-2">
-     
-        
-        {/* proseクラスがリッチエディタの文章を綺麗に見せる */}
-        <div class="prose prose-lg max-w-none text-gray-800 dark:prose-invert dark:text-zinc-200" set:html={spot.description} />
-        
-        <hr class="my-6" />
-        
-        <p class="text-base text-gray-800 dark:text-zinc-200"><strong>住所:</strong> {spot.address || '情報なし'}</p>
-        
-        {spot.affiliateLink && (
-          <div class="text-center mt-8">
-            <a href={spot.affiliateLink} target="_blank" rel="noopener noreferrer" class="inline-block w-full bg-orange-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-orange-600 transition-transform transform hover:-translate-y-1 shadow-lg">
-              Klookで予約・詳細を見る
-            </a>
+          {/* 右: 情報 */}
+          <div class="space-y-6">
+            {/* 住所 */}
+            <div class="bg-gray-50 dark:bg-zinc-700/50 rounded-lg p-4">
+              <p class="text-xs font-medium text-gray-500 dark:text-zinc-400 mb-1">住所</p>
+              <p class="text-sm text-gray-900 dark:text-zinc-100">{spot.address || '情報なし'}</p>
+            </div>
+
+            {/* アフィリエイト */}
+            {spot.affiliateLink && (
+              <a
+                href={spot.affiliateLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block w-full text-center py-3 px-6 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm"
+              >
+                Klookで予約・詳細を見る
+              </a>
+            )}
           </div>
-        )}
-      </div>
 
+        </div>
+      </div>
     </div>
   </div>
 </Layout>

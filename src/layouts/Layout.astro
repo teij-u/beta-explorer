@@ -36,72 +36,98 @@ const {
       </>
     )}
   </head>
-  <body class="bg-white dark:bg-zinc-900 transition-colors duration-300">
-    <header class="sticky top-0 z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-            {/* ヘッダー左側 */}
-            <div class="flex-shrink-0 flex items-center">
-            <a href="/" class="flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white hover:text-blue-700 dark:hover:text-blue-400 transition-colors">
+  <body class="bg-slate-50 dark:bg-zinc-900 transition-colors duration-300 min-h-screen flex flex-col">
+
+    {/* ===== ヘッダー ===== */}
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-lg border-b border-gray-100 dark:border-zinc-800">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-14">
+
+          {/* ロゴ */}
+          <a href="/" class="flex items-center gap-2 group">
+            <span class="text-xl font-bold tracking-tight text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
               β-Explorer
-              <span class="ml-2 mt-0.5 text-base font-semibold text-gray-900 dark:text-white block md:hidden whitespace-nowrap" style="position:relative; top:0.15rem;">～あなただけの穴場スポット～</span>
-            </a>
-            </div>
-            {/* ヘッダー右側（PC用） */}
-            <div class="hidden md:flex items-center space-x-6">
-            <nav class="flex space-x-6">
-              <a href="/about/" class="text-gray-700 dark:text-zinc-300 hover:text-blue-700 dark:hover:text-blue-400 transition-colors">このサイトについて</a>
-              <a href="/contact/" class="text-gray-700 dark:text-zinc-300 hover:text-blue-700 dark:hover:text-blue-400 transition-colors">お問い合わせ</a>
+            </span>
+            <span class="hidden sm:inline-block md:hidden text-xs text-gray-400 dark:text-zinc-500 font-normal">
+              穴場スポット探索
+            </span>
+          </a>
+
+          {/* PC ナビ */}
+          <div class="hidden md:flex items-center gap-1">
+            <nav class="flex items-center gap-1 mr-3">
+              <a href="/about/" class="px-3 py-1.5 text-sm text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-md transition-all">このサイトについて</a>
+              <a href="/contact/" class="px-3 py-1.5 text-sm text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-md transition-all">お問い合わせ</a>
             </nav>
             <a
               href="/submit/"
-              class="ml-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              class="px-4 py-1.5 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-md hover:bg-gray-700 dark:hover:bg-gray-100 transition-colors"
             >
-              ＋ スポットを投稿
+              スポットを投稿
             </a>
-            <ThemeToggleButton />
+            <div class="ml-2">
+              <ThemeToggleButton />
             </div>
-            {/* ハンバーガーメニューボタン（SP用） */}
-          <div class="md:hidden flex items-center">
-            
-            <button id="menu-btn" class="ml-4 p-2 text-gray-700 dark:text-zinc-300 hover:text-blue-700 dark:hover:text-blue-400" aria-label="メニューを開く">
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </div>
+
+          {/* SP ハンバーガー */}
+          <div class="md:hidden flex items-center gap-2">
+            <ThemeToggleButton />
+            <button id="menu-btn" class="p-2 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white rounded-md hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all" aria-label="メニューを開く">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
             </button>
           </div>
-          
+
         </div>
-        {/* SP用ナビゲーションメニュー */}
-        <div id="mobile-menu" class="md:hidden hidden bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm">
-          <nav class="px-2 pt-2 pb-4 space-y-1">
-            <a href="/about/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800">このサイトについて</a>
-            <a href="/contact/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800">お問い合わせ</a>
-            <a
-              href="/submit/"
-              class="block w-full text-center mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              ＋ スポットを投稿
-            </a>
+
+        {/* SP メニュー */}
+        <div id="mobile-menu" class="md:hidden hidden border-t border-gray-100 dark:border-zinc-800">
+          <nav class="py-3 space-y-1">
+            <a href="/about/" class="block px-3 py-2 text-sm text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-md transition-all">このサイトについて</a>
+            <a href="/contact/" class="block px-3 py-2 text-sm text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-md transition-all">お問い合わせ</a>
+            <div class="pt-2 px-3">
+              <a
+                href="/submit/"
+                class="block w-full text-center py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-md hover:bg-gray-700 dark:hover:bg-gray-100 transition-colors"
+              >
+                スポットを投稿
+              </a>
+            </div>
           </nav>
         </div>
       </div>
     </header>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    {/* ===== メイン ===== */}
+    <div class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
       <main>
         <slot />
       </main>
-      <footer class="border-t border-gray-200 dark:border-zinc-700 mt-12 pt-8 pb-8">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500 dark:text-zinc-400">
-          <div class="flex items-center gap-4">
-            <a href="/" class="hover:text-blue-600 transition-colors">ホーム</a>
-            <a href="/about/" class="hover:text-blue-600 transition-colors">このサイトについて</a>
-            <a href="/contact/" class="hover:text-blue-600 transition-colors">お問い合わせ</a>
-          </div>
-          <p>&copy; 2025 β-Explorer. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
+
+    {/* ===== フッター ===== */}
+    <footer class="mt-20 border-t border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div>
+            <p class="text-sm font-semibold text-gray-900 dark:text-white">β-Explorer</p>
+            <p class="text-xs text-gray-400 dark:text-zinc-500 mt-1">まだ誰も知らない穴場スポットを発見しよう</p>
+          </div>
+          <nav class="flex items-center gap-6 text-sm text-gray-500 dark:text-zinc-400">
+            <a href="/" class="hover:text-gray-900 dark:hover:text-white transition-colors">ホーム</a>
+            <a href="/about/" class="hover:text-gray-900 dark:hover:text-white transition-colors">サイトについて</a>
+            <a href="/contact/" class="hover:text-gray-900 dark:hover:text-white transition-colors">お問い合わせ</a>
+            <a href="/submit/" class="hover:text-gray-900 dark:hover:text-white transition-colors">投稿</a>
+          </nav>
+        </div>
+        <div class="mt-8 pt-6 border-t border-gray-50 dark:border-zinc-800">
+          <p class="text-xs text-gray-400 dark:text-zinc-600">&copy; 2025 β-Explorer. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
     <script>
       const menuBtn = document.getElementById('menu-btn');
       const mobileMenu = document.getElementById('mobile-menu');

@@ -1,7 +1,7 @@
 ---
-// このファイルは、サイトのトップページを定義しています。
 import Layout from '../layouts/Layout.astro';
 import { createClient } from 'microcms-js-sdk';
+import { getCategoryClasses } from '../utils/tagColors';
 
 type Spot = {
   id: string;
@@ -17,8 +17,8 @@ const client = createClient({
   apiKey: import.meta.env.MICROCMS_API_KEY,
 });
 
-const response = await client.get<{ contents: Spot[] }>({ 
-  endpoint: "spots", 
+const response = await client.get<{ contents: Spot[] }>({
+  endpoint: "spots",
   queries: { limit: 100 }
 });
 const spots: Spot[] = response.contents;
@@ -30,125 +30,113 @@ const allRegions = spots.flatMap((spot) => spot.region);
 const uniqueRegions = [...new Set(allRegions)];
 ---
 
-<Layout title="Route Explorer - トップページ">
-  {/* ヒーローセクション */}
+<Layout title="β-Explorer - 穴場スポット探索">
+
+  {/* ===== ヒーロー ===== */}
   <div
-    class="relative h-40 md:h-48 overflow-hidden bg-cover bg-center flex items-center justify-center text-center p-4 shadow-lg hidden sm:flex"
+    class="relative h-52 md:h-64 overflow-hidden bg-cover bg-center flex items-center justify-center text-center rounded-2xl mt-6 hidden sm:flex"
     style={`background-image: url('/images/hero-image.jpg');`}
   >
-    <div class="absolute inset-0 bg-black/20"></div>
-    <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent"></div>
-    <div class="relative z-10 flex flex-col justify-center items-center h-full">
-      <header class="text-center"> 
-        <h1 class="text-4xl md:text-6xl font-bold text-shadow-lg text-white">β-Explorer</h1> 
-        <p class="text-base md:text-xl font-bold opacity-90 mt-2 text-white">
-          最強穴場スポットを <span class="font-semibold text-2xl">発見</span> しよう！
-        </p>
-      </header>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50 rounded-2xl"></div>
+    <div class="relative z-10 px-4">
+      <h1 class="text-3xl md:text-5xl font-bold text-shadow-lg text-white tracking-tight">β-Explorer</h1>
+      <p class="text-sm md:text-base text-white/80 mt-3 font-light tracking-wide">
+        まだ誰も知らない穴場スポットを、発見しよう
+      </p>
     </div>
   </div>
 
-  {/* ↓↓↓ 新しい検索パネルのコードに置き換え ↓↓↓ */}
-<div class="search-panel bg-white dark:bg-zinc-800 rounded-2xl p-4 md:p-6 shadow-2xl max-w-5xl mx-auto relative z-30 mt-8 mb-8 border border-gray-200 dark:border-zinc-700">
+  {/* ===== 検索パネル ===== */}
+  <div class="bg-white dark:bg-zinc-800 rounded-xl p-4 md:p-5 shadow-sm max-w-4xl mx-auto relative z-30 mt-6 border border-gray-100 dark:border-zinc-700">
 
-  {/* --- PC用のレイアウト --- */}
-  <div class="hidden md:flex items-end gap-4">
-    {/* キーワード入力 */}
-    <div class="flex-grow">
-      <label for="keyword" class="block mb-1 text-sm font-semibold text-gray-600 dark:text-zinc-300">キーワード</label>
-      <input type="text" id="keyword" class="w-full p-3 border-2 border-gray-200 rounded-lg bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white" placeholder="穴場を探す…">
-    </div>
-    {/* 地域セレクト */}
-    <div>
-      <label for="region" class="block mb-1 text-sm font-semibold text-gray-600 dark:text-zinc-300">地域</label>
-      <select id="region" class="w-full p-3 border-2 border-gray-200 rounded-lg bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-        <option value="">すべての地域</option>
-        {uniqueRegions.map(region => <option value={region}>{region}</option>)}
-      </select>
-    </div>
-    {/* カテゴリーセレクト */}
-    <div>
-      <label for="category" class="block mb-1 text-sm font-semibold text-gray-600 dark:text-zinc-300">カテゴリー</label>
-      <select id="category" class="w-full p-3 border-2 border-gray-200 rounded-lg bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-        <option value="">すべてのカテゴリー</option>
-        {uniqueCategories.map(category => <option value={category}>{category}</option>)}
-      </select>
-    </div>
-    {/* 検索ボタン */}
-    <div>
-      <button id="search-btn" class="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-        検索
-      </button>
-    </div>
-  </div>
-
-  {/* --- スマートフォン用のレイアウト --- */}
-  <div class="md:hidden">
-    {/* キーワード入力とボタン */}
-    <div class="relative flex items-center">
-      <input type="text" id="keyword-mobile" class="w-full p-3 border-2 border-gray-200 rounded-lg bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white pr-24" placeholder="穴場を探す…">
-      <div class="absolute right-1 flex items-center">
-        <button id="filter-toggle-btn" class="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 4v10m0-4.5a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5zM4 6h16M4 12h16M4 18h16" /></svg>
-        </button>
-        <button id="search-btn-mobile" class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-        </button>
+    {/* PC */}
+    <div class="hidden md:flex items-end gap-3">
+      <div class="flex-grow">
+        <label for="keyword" class="block mb-1 text-xs font-medium text-gray-500 dark:text-zinc-400">キーワード</label>
+        <input type="text" id="keyword" class="input-field" placeholder="スポット名や特徴で検索...">
       </div>
-    </div>
-    {/* 絞り込みオプション（普段は非表示） */}
-    <div id="mobile-filters" class="hidden mt-4 space-y-4">
-      <div>
-        <label for="region-mobile" class="block mb-1 text-sm font-semibold text-gray-600 dark:text-zinc-300">地域</label>
-        <select id="region-mobile" class="w-full p-3 border-2 border-gray-200 rounded-lg bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-          <option value="">すべての地域</option>
+      <div class="w-40">
+        <label for="region" class="block mb-1 text-xs font-medium text-gray-500 dark:text-zinc-400">地域</label>
+        <select id="region" class="input-field">
+          <option value="">すべて</option>
           {uniqueRegions.map(region => <option value={region}>{region}</option>)}
         </select>
       </div>
-      <div>
-        <label for="category-mobile" class="block mb-1 text-sm font-semibold text-gray-600 dark:text-zinc-300">カテゴリー</label>
-        <select id="category-mobile" class="w-full p-3 border-2 border-gray-200 rounded-lg bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-          <option value="">すべてのカテゴリー</option>
+      <div class="w-40">
+        <label for="category" class="block mb-1 text-xs font-medium text-gray-500 dark:text-zinc-400">カテゴリー</label>
+        <select id="category" class="input-field">
+          <option value="">すべて</option>
           {uniqueCategories.map(category => <option value={category}>{category}</option>)}
         </select>
       </div>
+      <div>
+        <button id="search-btn" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-700 dark:hover:bg-gray-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          検索
+        </button>
+      </div>
+    </div>
+
+    {/* SP */}
+    <div class="md:hidden">
+      <div class="relative flex items-center gap-2">
+        <input type="text" id="keyword-mobile" class="input-field pr-20" placeholder="スポットを検索...">
+        <div class="absolute right-1 flex items-center gap-1">
+          <button id="filter-toggle-btn" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
+          </button>
+          <button id="search-btn-mobile" class="p-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-md transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          </button>
+        </div>
+      </div>
+      <div id="mobile-filters" class="hidden mt-3 space-y-3">
+        <div>
+          <label for="region-mobile" class="block mb-1 text-xs font-medium text-gray-500 dark:text-zinc-400">地域</label>
+          <select id="region-mobile" class="input-field">
+            <option value="">すべて</option>
+            {uniqueRegions.map(region => <option value={region}>{region}</option>)}
+          </select>
+        </div>
+        <div>
+          <label for="category-mobile" class="block mb-1 text-xs font-medium text-gray-500 dark:text-zinc-400">カテゴリー</label>
+          <select id="category-mobile" class="input-field">
+            <option value="">すべて</option>
+            {uniqueCategories.map(category => <option value={category}>{category}</option>)}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end mt-3">
+      <button id="clear-btn" class="text-xs text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors">条件をクリア</button>
     </div>
   </div>
 
-  {/* クリアボタン（共通） */}
-  <div class="flex justify-end mt-4">
-    <button id="clear-btn" class="text-sm text-gray-600 dark:text-zinc-400 hover:underline">条件をクリア</button>
-  </div>
+  {/* ===== 新規スポットFAB ===== */}
+  <a
+    href="/submit/"
+    id="submitFab"
+    class="fixed bottom-6 right-6 md:bottom-8 md:right-10 z-50 inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+    スポットを投稿
+  </a>
 
-</div>
-
-    {/* 新規スポットボタン（右下固定） */}
-    <a
-      href="/submit/"
-      class="fixed bottom-8 right-8 md:right-12 z-50 inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 via-blue-600 to-sky-700 text-white font-semibold rounded-full shadow-lg hover:from-blue-700 hover:to-sky-600 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      style="box-shadow: 0 4px 24px rgba(0,0,0,0.15);"
-      title="新規スポットを追加"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-      新規スポット
-    </a>
-  </div>
-
-  {/* スポット件数 */}
+  {/* ===== スポット件数 ===== */}
   <div class="flex justify-between items-center mt-8 mb-4">
-    <p id="spot-count" class="text-sm text-gray-500 dark:text-zinc-400">
-      <span class="font-semibold text-gray-700 dark:text-zinc-200">{spots.length}</span> 件のスポット
+    <p id="spot-count" class="text-xs text-gray-400 dark:text-zinc-500">
+      <span class="font-medium text-gray-600 dark:text-zinc-300">{spots.length}</span> 件のスポット
     </p>
   </div>
 
-  {/* スポット一覧 */}
-  <ul id="spotList" class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+  {/* ===== スポット一覧 ===== */}
+  <ul id="spotList" class="grid grid-cols-2 gap-4 md:gap-5 md:grid-cols-3 lg:grid-cols-4">
     {spots.map((spot) => (
       <li
-        class="bg-white dark:bg-zinc-800 rounded-xl shadow-md overflow-hidden flex flex-col"
+        class="spot-card bg-white dark:bg-zinc-800 rounded-xl overflow-hidden flex flex-col border border-gray-100 dark:border-zinc-700/50"
         data-spot-name={spot.spotName}
         data-description={spot.description}
         data-region={spot.region[0]}
@@ -156,33 +144,35 @@ const uniqueRegions = [...new Set(allRegions)];
       >
         <div class="relative">
           <a href={`/spots/${spot.id}/`}>
-  {spot.image ? (
-    <img src={spot.image.url} alt={spot.spotName} class="w-full h-32 sm:h-48 object-cover" />
-  ) : (
-    <div class="w-full h-32 sm:h-48 bg-gray-200 flex items-center justify-center">
-      {/* ... */}
-    </div>
-  )}
-</a>
+            {spot.image ? (
+              <img src={spot.image.url} alt={spot.spotName} class="w-full h-32 sm:h-44 object-cover" loading="lazy" />
+            ) : (
+              <div class="w-full h-32 sm:h-44 bg-gray-100 dark:bg-zinc-700 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-300 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V5.25a1.5 1.5 0 00-1.5-1.5H3.75a1.5 1.5 0 00-1.5 1.5v14.25a1.5 1.5 0 001.5 1.5z" />
+                </svg>
+              </div>
+            )}
+          </a>
         </div>
-        <div class="p-6 flex-grow flex flex-col relative group">
-          <div class="flex items-baseline flex-wrap gap-2 mb-2">
+        <div class="p-3 sm:p-4 flex-grow flex flex-col relative group">
+          <div class="flex items-center flex-wrap gap-1.5 mb-2">
             <a href={`/category/${spot.category[0]}/`} class="relative z-10">
-              <span class="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900/70 dark:text-blue-200 text-xs font-semibold px-2.5 py-1 rounded-full hover:bg-blue-200 transition-colors">
+              <span class={`badge-category ${getCategoryClasses(spot.category[0])}`}>
                 {spot.category[0]}
               </span>
             </a>
             <a href={`/region/${spot.region[0]}/`} class="relative z-10">
-              <span class="inline-block bg-green-100 text-green-800 dark:bg-green-900/70 dark:text-green-200 text-xs font-semibold px-2.5 py-1 rounded-full hover:bg-green-200 transition-colors">
+              <span class="badge-region">
                 {spot.region[0]}
               </span>
             </a>
           </div>
-          <h2 class="text-base md:text-2xl font-bold text-gray-900 dark:text-zinc-100 leading-tight">
+          <h2 class="text-sm md:text-base font-semibold text-gray-900 dark:text-zinc-100 leading-snug line-clamp-2">
             {spot.spotName}
           </h2>
-            <div
-            class={`prose prose-xs md:prose-xs mt-2 text-gray-500 dark:text-zinc-400 dark:prose-invert line-clamp-3 text-[11px] sm:text-xs`}
+          <div
+            class="prose prose-xs mt-1.5 text-gray-400 dark:text-zinc-500 dark:prose-invert line-clamp-2 text-[11px] sm:text-xs leading-relaxed"
             set:html={spot.description}
           />
           <a href={`/spots/${spot.id}/`} class="absolute inset-0 z-0" aria-label={spot.spotName}></a>
@@ -191,28 +181,29 @@ const uniqueRegions = [...new Set(allRegions)];
     ))}
   </ul>
 
-  {/* 検索結果なしメッセージ */}
-  <div id="no-results" class="hidden text-center py-12">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  {/* ===== 検索結果なし ===== */}
+  <div id="no-results" class="hidden text-center py-16">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-200 dark:text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
     </svg>
-    <p class="mt-4 text-lg text-gray-500 dark:text-zinc-400">条件に一致するスポットが見つかりませんでした</p>
-    <button id="clear-filters-btn" class="mt-4 text-blue-600 hover:underline">条件をクリアして全件表示</button>
+    <p class="mt-4 text-sm text-gray-400 dark:text-zinc-500">条件に一致するスポットが見つかりませんでした</p>
+    <button id="clear-filters-btn" class="mt-3 text-sm text-blue-600 dark:text-blue-400 hover:underline">条件をクリアして全件表示</button>
   </div>
 
-  {/* トップに戻るボタン */}
-  <a 
-    href="/" 
+  {/* ===== トップに戻る ===== */}
+  <button
     id="backToTopBtn"
-    class="fixed bottom-8 right-8 md:right-12 z-50 inline-flex items-center justify-center px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors font-semibold shadow"
-    style="box-shadow: 0 4px 24px rgba(0,0,0,0.15); display: none;" 
-    title="スポット一覧に戻る"
+    class="fixed bottom-6 right-6 md:bottom-8 md:right-10 z-50 hidden inline-flex items-center justify-center px-4 py-2 rounded-full bg-white dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 text-sm border border-gray-200 dark:border-zinc-600 shadow-md hover:shadow-lg transition-all"
+    title="トップに戻る"
+    aria-label="ページトップへ戻る"
   >
-    ^ トップに戻る
-  </a>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+    </svg>
+    トップへ
+  </button>
 
   <script is:inline>
-  // PC用とスマホ用の要素を全て取得
   const keywordInput = document.getElementById('keyword');
   const regionSelect = document.getElementById('region');
   const categorySelect = document.getElementById('category');
@@ -222,27 +213,23 @@ const uniqueRegions = [...new Set(allRegions)];
   const regionSelectMobile = document.getElementById('region-mobile');
   const categorySelectMobile = document.getElementById('category-mobile');
   const searchBtnMobile = document.getElementById('search-btn-mobile');
-  
+
   const clearBtn = document.getElementById('clear-btn');
   const spotList = document.getElementById('spotList');
-  
+
   const filterToggleBtn = document.getElementById('filter-toggle-btn');
   const mobileFilters = document.getElementById('mobile-filters');
 
-  // 必須要素が存在することを確認してから処理を開始
   if (spotList && clearBtn) {
     const spots = spotList.querySelectorAll('li');
 
-    // 絞り込みを実行するメインの関数
     const filterSpots = () => {
-      // 現在の画面幅に応じて、PC用かスマホ用の入力値かを取得
       const isMobile = window.innerWidth < 768;
       const keywordTerm = (isMobile ? keywordInputMobile.value : keywordInput.value).toLowerCase();
       const regionTerm = isMobile ? regionSelectMobile.value : regionSelect.value;
       const categoryTerm = isMobile ? categorySelectMobile.value : categorySelect.value;
 
       spots.forEach(spot => {
-        // ...（ここの絞り込みロジックは以前と同じ）
         const spotData = spot.dataset;
         const region = spotData.region || '';
         const category = spotData.category || '';
@@ -259,7 +246,6 @@ const uniqueRegions = [...new Set(allRegions)];
         }
       });
 
-      // 表示件数の更新と「結果なし」メッセージ切替
       const visibleCount = [...spots].filter(s => s.style.display !== 'none').length;
       const noResults = document.getElementById('no-results');
       if (noResults) {
@@ -267,42 +253,53 @@ const uniqueRegions = [...new Set(allRegions)];
       }
       const countEl = document.getElementById('spot-count');
       if (countEl) {
-        countEl.innerHTML = `<span class="font-semibold text-gray-700 dark:text-zinc-200">${visibleCount}</span> 件のスポット`;
+        countEl.innerHTML = `<span class="font-medium text-gray-600 dark:text-zinc-300">${visibleCount}</span> 件のスポット`;
       }
     };
 
-    // 条件をクリアする関数
     const clearFilters = () => {
-      // PC用とスマホ用の両方のフォームをリセット
       keywordInput.value = '';
       regionSelect.value = '';
       categorySelect.value = '';
       keywordInputMobile.value = '';
       regionSelectMobile.value = '';
       categorySelectMobile.value = '';
-      filterSpots(); // 絞り込みを再実行して全件表示に戻す
+      filterSpots();
     };
 
-    // 各ボタンにイベントリスナーを設定
     searchBtn?.addEventListener('click', filterSpots);
     searchBtnMobile?.addEventListener('click', filterSpots);
     clearBtn.addEventListener('click', clearFilters);
 
-    // スマホ用の絞り込み開閉ボタンの処理
     filterToggleBtn?.addEventListener('click', () => {
       mobileFilters?.classList.toggle('hidden');
     });
 
-    // 「結果なし」のクリアボタン
     document.getElementById('clear-filters-btn')?.addEventListener('click', clearFilters);
 
-    // プルダウンが変更された時も、自動で検索を実行
     regionSelect?.addEventListener('change', filterSpots);
     categorySelect?.addEventListener('change', filterSpots);
     regionSelectMobile?.addEventListener('change', filterSpots);
     categorySelectMobile?.addEventListener('change', filterSpots);
   }
-</script>
-  
-</Layout>
 
+  // FAB ↔ トップへ戻るボタンの切り替え
+  const submitFab = document.getElementById('submitFab');
+  const backToTopBtn = document.getElementById('backToTopBtn');
+  if (submitFab && backToTopBtn) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        submitFab.classList.add('hidden');
+        backToTopBtn.classList.remove('hidden');
+      } else {
+        submitFab.classList.remove('hidden');
+        backToTopBtn.classList.add('hidden');
+      }
+    });
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+  </script>
+
+</Layout>

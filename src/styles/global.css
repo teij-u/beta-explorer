@@ -1,14 +1,80 @@
-/* Google Fontsの読み込みは、必ずファイルの先頭に書きます */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
 
-/* サイト全体の背景や基本フォントの設定 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* 我々が追加したカスタムクラス */
-.text-shadow-lg {
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #f8fafc; /* slate-50 */
+    color: #334155;
+    letter-spacing: 0.01em;
+    line-height: 1.8;
+  }
+
+  .dark body {
+    background-color: #18181b; /* zinc-900 */
+  }
 }
-body {
-  font-family: 'Noto Sans JP', sans-serif;
-  background-color: #ffffff; /* Tailwindのslate-100に近い色 */
-  color: #334155; /* 文字色も濃いグレーに調整 */
+
+@layer components {
+  .text-shadow-lg {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Refined card hover */
+  .spot-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .spot-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Refined input focus */
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-gray-200 rounded-lg bg-white text-gray-900
+      placeholder-gray-400
+      focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none
+      transition-all duration-200;
+  }
+  .dark .input-field {
+    @apply border-zinc-600 bg-zinc-800 text-white placeholder-zinc-500
+      focus:border-blue-400 focus:ring-blue-400;
+  }
+
+  /* Badge styles */
+  /* badge-category: 構造のみ。色は getCategoryClasses() で動的に付与 */
+  .badge-category {
+    @apply inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-colors;
+  }
+
+  .badge-region {
+    @apply inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-colors
+      bg-emerald-50 text-emerald-700 border-emerald-200;
+  }
+  .dark .badge-region {
+    @apply bg-emerald-900/30 text-emerald-300 border-emerald-700;
+  }
+  .badge-region:hover {
+    @apply bg-emerald-100;
+  }
+  .dark .badge-region:hover {
+    @apply bg-emerald-900/50;
+  }
+
+  /* Back link */
+  .back-link {
+    @apply inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors;
+  }
+  .dark .back-link {
+    @apply text-zinc-400 hover:text-white;
+  }
 }
